@@ -54,6 +54,23 @@ const getRecievedRequest = asyncHandler(async (req, res) => {
 
 })
 
+// --------------- getting all sent requests ----------- 
+
+const getAllSentRequest = asyncHandler(async (req, res) => {
+
+  const userId = req.user._id
+
+  if (!userId) {
+    throw new ApiError(401, "user id not available !")
+  }
+
+  const requests = await FriendShip.find({
+    user1: userId
+  })
+
+  res.status(200).json(ApiResponse(200, requests, "all request fetch successfully"))
+})
+
 // -------------- accepting or rejection a friend request --------------
 
 
@@ -80,4 +97,4 @@ const requestAction = asyncHandler(async (req, res) => {
 
 
 
-export { sendRequset, getRecievedRequest, requestAction }
+export { sendRequset, getRecievedRequest, requestAction, getAllSentRequest }

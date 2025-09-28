@@ -1,42 +1,52 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import SearchBar from '../components/SearchBar'
 import { useGetChats } from '../query/useGetChats'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCurrentUserInfo } from '../query/useCurrentUserInfo'
 import Dialog from '../components/Dialog'
 import { useGetUsers } from '../query/GetAllUsers'
+import { useSendRequestMutation } from '../mutations/useSendRequest'
+import { useAllSentRequestQuery } from '../query/useAllSentRequestQuery'
+import { Menu } from 'primereact/menu';
+import { useLogoutMutation } from '../mutations/logOutMutation'
+import AddFriends from '../components/AddFriends'
 
 const Home = () => {
+
+  const menuRef = useRef(null)
+
+  const { uid } = useParams()
+
   const [searchText, setSearchText] = useState("")
   const [userSearch, setUserSearch] = useState("")
-  const [users, setUsers] = useState([])
   const [selectedChat, setSelectedChat] = useState(0)
+  const [senderId, setSenderId] = useState("")
   const [viewAddUser, setViewAddUser] = useState(false)
+
   const currentUserInfo = useCurrentUserInfo()
-  const allUsers = useGetUsers()
+  const sendRequestMutation = useSendRequestMutation()
+  const logoutMutation = useLogoutMutation()
   const chatsData = useGetChats()
   const navigate = useNavigate()
-  const { uid } = useParams()
+
   const chats = chatsData?.data || []
 
+  // console.log("reqs ----> ", sentRequests.data)
   // console.log(chatsData.data)
-  console.log("users -----> ", users)
+  // console.log("users -----> ", users)
 
-  // ------------------- Effects ---------------- //
+  const items = [
+    {
+      label: 'Logout',
+      icon: 'pi pi-refresh',
+      command: () => {
+        console.log("logged out")
+        logoutMutation.mutate()
+      }
+    },
+  ];
 
-  useEffect(() => {
-    if (allUsers.data) {
-      setUsers(allUsers.data)
-    }
-  }, [allUsers.data])
 
-  useEffect(() => {
-    if (userSearch === "") {
-      setUsers(allUsers.data)
-    } else {
-      setUsers(allUsers.data.filter(_user => _user.fullName.toLocaleLowerCase().includes(userSearch.trim().toLocaleLowerCase())))
-    }
-  }, [userSearch])
 
 
   // TODO: -------------- UI BODY -----------------
@@ -52,7 +62,8 @@ const Home = () => {
             <div className='flex gap-5 align-items-center'>
               <i className='pi pi-user-plus cursor-pointer' onClick={() => { setViewAddUser(true) }} />
               <i className='pi pi-comment cursor-pointer' />
-              <i className='pi pi-cog cursor-pointer' />
+              <i className='pi pi-cog cursor-pointer' onClick={(e) => { menuRef.current.toggle(e) }} />
+              <Menu model={items} popup ref={menuRef} id="popup_menu_left" />
             </div>
           </div>
           <div className='py-2'>
@@ -63,71 +74,7 @@ const Home = () => {
         {/* --------------------- add user dialog ---------------------- */}
 
         <Dialog visible={viewAddUser} >
-          <div className='relative in-animation'
-            style={{
-              background: "#1111",
-              border: "1px solid #262626",
-              borderRadius: "12px",
-              padding: "24px",
-              width: "500px",
-              height: "600px",
-              color: "#fff",
-              overflowY: "auto",
-              boxShadow: "0 0 10px rgba(0,0,0,0.6)",
-            }}
-          >
-            <div className='flex align-items-center gap-3'>
-              <i className='pi pi-user-plus cursor-pointer' style={{
-                color: "#7b56f2",
-                fontSize: "18px",
-              }} />
-              <span style={{
-                fontSize: "18px",
-                fontWeight: "600"
-              }}
-              >Add New User</span>
-            </div>
-            <i className='pi pi-times absolute cursor-pointer' style={{
-              color: "grey", right: "15px", top: "15px",
-              fontSize: "14px"
-            }}
-              onClick={() => { setViewAddUser(false) }}
-            />
-            {/* ------------ content ------------- */}
-            <div className='py-3'>
-              <SearchBar placeholder={"Search by name ..."} searchText={userSearch} setSearchText={setUserSearch} />
-            </div>
-
-            <div className='flex flex-column gap-2'>
-              {
-                users && users.map((_user, idx) => {
-                  return (<div className='user-tile' key={idx}>
-                    <div className='flex align-items-center gap-3'>
-                      <img
-                        src={_user?.avatar}
-                        alt='user'
-                        style={{
-                          height: "50px",
-                          width: "50px",
-                          objectFit: "cover",
-                          objectPosition: "center",
-                          borderRadius: "50%"
-                        }}
-                      />
-                      <span>{_user.fullName}</span>
-                    </div>
-                    {
-                      !_user.friendship?.includes(uid) ?
-                        <button><i className='pi pi-user-plus' /> Add</button> :
-                        <button style={{ background: "#10B981" }}><i className='pi pi-comment' />Message</button>
-                    }
-                  </div>)
-                })
-              }
-            </div>
-
-
-          </div>
+          <AddFriends setViewAddUser={setViewAddUser} />
         </Dialog>
 
         {/* --------------- chats ------------------- */}
@@ -144,7 +91,7 @@ const Home = () => {
             const otherUser = _chat.participants.find(
               (p) => p._id !== currentUserInfo.data._id
             )
-            console.log("", otherUser, currentUserInfo.data)
+            {/* console.log("", otherUser, currentUserInfo.data) */ }
 
             return (
               <div
@@ -152,7 +99,7 @@ const Home = () => {
                 className={` chat-tile ${isSelected ? `selected` : ``}`}
                 onClick={() => {
                   setSenderId(otherUser?._id)
-                  selectedChat(idx)
+                  setSelectedChat(idx)
                 }}
               >
                 <img

@@ -1,0 +1,55 @@
+
+# === General ===
+node_modules/
+**/node_modules/
+dist/
+build/
+.env
+.env.*.local
+.DS_Store
+*.log
+
+# === Frontend (Vite, React, etc.) ===
+.vite/
+*.local
+*.cache/
+coverage/
+*.tsbuildinfo
+
+# Yarn / npm / pnpm
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# === Backend (Node.js, Express, etc.) ===
+*.pid
+*.seed
+*.pid.lock
+logs/
+*.sqlite
+*.sqlite3
+*.db
+
+# === OS / IDE ===
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# === Misc ===
+*.tgz
+*.zip
+*.tar
+*.gz
+*.bak
+*.tmp
+
+# === MacOS ===
+.AppleDouble
+.LSOverride
+.Trashes
+.Spotlight-V100
+.fseventsd

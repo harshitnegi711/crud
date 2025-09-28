@@ -10,7 +10,9 @@ const routes = {
   get_current_user: url + masterPath + "/user/get-current-user",
   get_chats: url + masterPath + "/chats/",
   get_messages: url + masterPath + "/message/get-all/",
-  send_message: url + masterPath + "/message/send"
+  send_message: url + masterPath + "/message/send",
+  send_request: url + masterPath + "/friendship/send-request",
+  get_sent_request: url + masterPath + "/friendship/view-sent-requests"
 }
 
 
