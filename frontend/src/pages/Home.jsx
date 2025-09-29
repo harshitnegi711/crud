@@ -10,6 +10,10 @@ import { useAllSentRequestQuery } from '../query/useAllSentRequestQuery'
 import { Menu } from 'primereact/menu';
 import { useLogoutMutation } from '../mutations/logOutMutation'
 import AddFriends from '../components/AddFriends'
+import useRecieveRequests from '../query/useRecieveRequests'
+import Requests from '../components/Requests'
+
+
 
 const Home = () => {
 
@@ -22,18 +26,20 @@ const Home = () => {
   const [selectedChat, setSelectedChat] = useState(0)
   const [senderId, setSenderId] = useState("")
   const [viewAddUser, setViewAddUser] = useState(false)
+  const [viewRequests, setViewRequests] = useState(false)
 
   const currentUserInfo = useCurrentUserInfo()
-  const sendRequestMutation = useSendRequestMutation()
   const logoutMutation = useLogoutMutation()
   const chatsData = useGetChats()
   const navigate = useNavigate()
 
   const chats = chatsData?.data || []
 
+  // console.log("requests ---> ", requests.data)
   // console.log("reqs ----> ", sentRequests.data)
   // console.log(chatsData.data)
   // console.log("users -----> ", users)
+
 
   const items = [
     {
@@ -45,8 +51,6 @@ const Home = () => {
       }
     },
   ];
-
-
 
 
   // TODO: -------------- UI BODY -----------------
@@ -61,7 +65,7 @@ const Home = () => {
             <div style={{ fontSize: "1.2rem", fontWeight: "600" }}>Messages</div>
             <div className='flex gap-5 align-items-center'>
               <i className='pi pi-user-plus cursor-pointer' onClick={() => { setViewAddUser(true) }} />
-              <i className='pi pi-comment cursor-pointer' />
+              <i className='pi pi-users cursor-pointer' onClick={() => { setViewRequests(true) }} />
               <i className='pi pi-cog cursor-pointer' onClick={(e) => { menuRef.current.toggle(e) }} />
               <Menu model={items} popup ref={menuRef} id="popup_menu_left" />
             </div>
@@ -75,6 +79,10 @@ const Home = () => {
 
         <Dialog visible={viewAddUser} >
           <AddFriends setViewAddUser={setViewAddUser} />
+        </Dialog>
+
+        <Dialog visible={viewRequests}>
+          <Requests setViewRequests={setViewRequests} />
         </Dialog>
 
         {/* --------------- chats ------------------- */}
@@ -129,8 +137,6 @@ const Home = () => {
             )
           })}
         </div>
-
-
 
       </div>
 

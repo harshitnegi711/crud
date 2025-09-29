@@ -214,6 +214,21 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   return res.status(200).json(ApiResponse(200, req.user, "Current user fetched successfully."))        // req.user is add by the middleware we are using for authincating.
 })
 
+// ***************** Get user by id *************** //
+
+const getUserById = asyncHandler(async (req, res) => {
+  const { userId } = req.body
+  if (!userId) {
+    throw new ApiError(401, "user id missing.")
+  }
+  const user = await User.findById(userId)
+  if (!user) {
+    throw new ApiError(401, "user not found.")
+  }
+  return res.status(200).json(ApiResponse(200, user, "User fetched successfully."))
+})
+
+
 // **************** Getting all users *******************
 
 const getAllUsers = asyncHandler(async (req, res) => {
@@ -279,19 +294,6 @@ const updateAvatar = asyncHandler(async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 export {
   registerUser,
   login,
@@ -301,5 +303,6 @@ export {
   getCurrentUser,
   editCurrentUser,
   updateAvatar,
-  getAllUsers
+  getAllUsers,
+  getUserById
 }

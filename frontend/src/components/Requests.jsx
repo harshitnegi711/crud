@@ -4,49 +4,37 @@ import { useEffect, useState } from "react"
 import { useGetUsers } from "../query/GetAllUsers"
 import { useAllSentRequestQuery } from "../query/useAllSentRequestQuery"
 import { useSendRequestMutation } from "../mutations/useSendRequest"
+import useRecieveRequests from "../query/useRecieveRequests"
 
-const AddFriends = ({ setViewAddUser }) => {
+const Requests = ({ setViewRequests }) => {
 
   const { uid } = useParams()
 
   const allUsers = useGetUsers()
-  const sentRequests = useAllSentRequestQuery()
-  const sendRequestMutation = useSendRequestMutation()
+  const getRequests = useRecieveRequests()
 
-  const [userSearch, setUserSearch] = useState("")
-  const [users, setUsers] = useState([])
+  const [requests, setRequests] = useState([])
 
+  console.log("hello --->", getRequests.data)
 
   // ----------------- Functions --------------- //
 
-  const sendRequest = (revieverId, senderId) => {
-    // console.log("ids", revieverId, senderId)
-    sendRequestMutation.mutate({ reqRecieverId: revieverId, reqSenderId: senderId })
+  const getUser = (userId) => {
+    const user = allUsers.data.find(_user => _user._id === userId)
+    return user
   }
 
 
-  const checkReqSent = (userId) => {
-    return sentRequests.data?.some(
-      (req) => req.user2 === userId && req.status === "pending"
-    );
-  };
-
+  // console.log("hey", getUser("67daa1a802b100690ecd5d32"))
 
   // ------------------- Effects ---------------- //
 
   useEffect(() => {
-    if (allUsers.data) {
-      setUsers(allUsers.data)
+    if (getRequests.data) {
+      setRequests(getRequests.data)
     }
-  }, [allUsers.data])
+  }, [getRequests.data])
 
-  useEffect(() => {
-    if (userSearch === "") {
-      setUsers(allUsers.data)
-    } else {
-      setUsers(allUsers.data.filter(_user => _user.fullName.toLocaleLowerCase().includes(userSearch.trim().toLocaleLowerCase())))
-    }
-  }, [userSearch])
 
   // --------------- UI BODY ----------------
   return (
@@ -72,26 +60,27 @@ const AddFriends = ({ setViewAddUser }) => {
           fontSize: "18px",
           fontWeight: "600"
         }}
-        >Add New User</span>
+        >Requests</span>
       </div>
       <i className='pi pi-times absolute cursor-pointer' style={{
         color: "grey", right: "15px", top: "15px",
         fontSize: "14px"
       }}
-        onClick={() => { setViewAddUser(false) }}
+        onClick={() => { setViewRequests(false) }}
       />
       {/* ------------ content ------------- */}
-      <div className='py-3'>
-        <SearchBar placeholder={"Search by name ..."} searchText={userSearch} setSearchText={setUserSearch} />
-      </div>
+      {/* <div className='py-3'> */}
+      {/*   <SearchBar placeholder={"Search by name ..."} searchText={userSearch} setSearchText={setUserSearch} /> */}
+      {/* </div> */}
 
-      <div className='flex flex-column gap-2'>
+      <div className='flex flex-column gap-2 mt-3'>
         {
-          users && users.map((_user, idx) => {
+          requests && requests.map((_req, idx) => {
+            const user = getUser(_req.user1)
             return (<div className='user-tile' key={idx}>
               <div className='flex align-items-center gap-3'>
                 <img
-                  src={_user?.avatar}
+                  src={user?.avatar}
                   alt='user'
                   style={{
                     height: "50px",
@@ -101,19 +90,10 @@ const AddFriends = ({ setViewAddUser }) => {
                     borderRadius: "50%"
                   }}
                 />
-                <span>{_user.fullName}</span>
+                <span>{user.fullName}</span>
               </div>
-              {_user._id !== uid && (
-                checkReqSent(_user._id) ?
-                  <button style={{ background: "#6B7280" }}><i className='pi pi-check' />Sent</button>
-                  : !_user.friendship?.includes(uid) ?
-                    <button
-                      onClick={() => {
-                        sendRequest(_user._id, uid)
-                      }}><i className='pi pi-user-plus' /> Add</button> :
-                    <button style={{ background: "#10B981" }}><i className='pi pi-comment' />Message</button>
-              )
-              }
+              <button style={{ background: "#6B7280" }}><i className='pi pi-times flex align-items-center' />Decline</button>
+              <button style={{ background: "#8650FB" }}><i className='pi pi-check flex align-items-center' />Accept</button>
             </div>)
           })
         }
@@ -124,4 +104,4 @@ const AddFriends = ({ setViewAddUser }) => {
   )
 }
 
-export default AddFriends
+export default Requests
