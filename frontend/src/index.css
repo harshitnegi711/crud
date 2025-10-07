@@ -613,27 +613,35 @@ left:16px;
 
 .message-div{
 width:100%;
-background:black;
+background:grey;
 height:"100%";
+display:flex;
+flex-direction:column;
+gap:1px;
 }
 
 .message-top-bar{
   width:100%;
-  background:white;
- height:6%; 
+  background:black;
+  color:white;
+ height:5%; 
+ display:flex;
+ align-items:center;
+ padding:35px 10px;
+ gap:15px;
 }
 
 
 .message-container{
  width:100%;
-  background:lightgreen;
-  height:80%;
+  background:black;
+  height:85%;
   display:flex;
   flex-direction:column;
   gap:2rem;
 overflow-y:auto;
-padding-bottom:40px;
-/* margin-bottom:60px; */
+padding:10px;
+/* padding-bottom:20px; */
 
 }
 .message-content{
@@ -645,16 +653,15 @@ padding-bottom:40px;
 .right-chat{
  background:#8650FB;
   color:white;
-padding:0.7rem 1.2rem;
+padding:0.2rem 1.2rem;
 line-height:1.7rem;
 max-width:80%;
-border-radius:10px 0 10px 10px
-
+border-radius:10px 0 10px 10px;
 }
 
 .left-chat{
 background:#E5EBEF;
-padding:0.7rem 1.2rem;
+padding:0.2rem 1.2rem;
 line-height:1.7rem;
 max-width:80%;
 border-radius:0 10px 10px 10px
@@ -662,11 +669,11 @@ border-radius:0 10px 10px 10px
 .message-time{
   position:absolute;
   font-weight:250;
-  font-size:14px;
+  font-size:12px;
 }
 
 .message-bar{
-  background:wheat;
+  background:black;
   display:flex;
   gap:20px;
   align-items:center;
@@ -676,35 +683,46 @@ border-radius:0 10px 10px 10px
   height:80px;
   justify-content:center;
 }
-.message-bar > textarea{
-  resize:none;
+.message-bar > input{
   width:50%;
-  height:80%;
-  row:10;
-  column:10;
-  border-radius:8px;
-  outline:none;
-  font-size:1.1rem;
+  height:70%;
+  border:2px solid #262626;
+  background:black;
+  color:white;
+  border-radius:18px;
+  font-size:1rem;
   padding:10px 20px;
+  transition:all 0.2s ease
+}
+
+
+.message-bar > input:focus {
+  border:3px solid #7b56f2;
+  outline: none;
 }
 .send-div{
-  background:green;
+  background:#7b56f2;
   display:flex;
-  gap:10px;
+  gap:8px;
   align-items:center;
   justify-content:center;
-  padding:10px 20px;
+  padding:10px;
   color:white;
   border-radius:8px;
+  font-size:16px;
   cursor:pointer;
   transition:all 0.5s ease;
-
+border:none;
 }
 .send-div > i{
   font-size:1.1rem;
 }
 
 .send-div:hover{
+  opacity:0.7;
+}
+.disable{
+  background:grey;
   opacity:0.7;
 }
 

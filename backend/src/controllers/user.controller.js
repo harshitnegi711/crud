@@ -218,6 +218,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 const getUserById = asyncHandler(async (req, res) => {
   const { userId } = req.body
+  console.log("getting id ----> ", userId)
   if (!userId) {
     throw new ApiError(401, "user id missing.")
   }

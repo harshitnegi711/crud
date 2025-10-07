@@ -6,6 +6,7 @@ const routes = {
   create_user: url + masterPath + "/user/register",
   login_user: url + masterPath + "/user/login",
   get_all_users: url + masterPath + "/user/get-all",
+  get_user_by_id: url + masterPath + "/user/get",
   logout_user: url + masterPath + "/user/logout",
   get_current_user: url + masterPath + "/user/get-current-user",
   get_chats: url + masterPath + "/chats/",

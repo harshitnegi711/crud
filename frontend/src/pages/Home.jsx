@@ -12,6 +12,9 @@ import { useLogoutMutation } from '../mutations/logOutMutation'
 import AddFriends from '../components/AddFriends'
 import useRecieveRequests from '../query/useRecieveRequests'
 import Requests from '../components/Requests'
+import Messages from '../components/Messages'
+import Messages2 from '../components/Messages2'
+import { useGetMessages } from '../query/GetAllMessages'
 
 
 
@@ -24,17 +27,20 @@ const Home = () => {
   const [searchText, setSearchText] = useState("")
   const [userSearch, setUserSearch] = useState("")
   const [selectedChat, setSelectedChat] = useState(0)
-  const [senderId, setSenderId] = useState("")
+  const [friendId, setFriendId] = useState("")
+  const [recieverId, setRecieverId] = useState("")
   const [viewAddUser, setViewAddUser] = useState(false)
   const [viewRequests, setViewRequests] = useState(false)
 
   const currentUserInfo = useCurrentUserInfo()
   const logoutMutation = useLogoutMutation()
   const chatsData = useGetChats()
+  const messages = useGetMessages(friendId)
   const navigate = useNavigate()
 
   const chats = chatsData?.data || []
 
+  // console.log('messg ---> ', messages.data)
   // console.log("requests ---> ", requests.data)
   // console.log("reqs ----> ", sentRequests.data)
   // console.log(chatsData.data)
@@ -106,7 +112,7 @@ const Home = () => {
                 key={_chat._id}
                 className={` chat-tile ${isSelected ? `selected` : ``}`}
                 onClick={() => {
-                  setSenderId(otherUser?._id)
+                  setFriendId(otherUser?._id)
                   setSelectedChat(idx)
                 }}
               >
@@ -142,11 +148,7 @@ const Home = () => {
 
 
       {/* TODO: -------------- Messages ----------------- */}
-      <div className='message-div'>
-        messages
-      </div>
-
-
+      <Messages2 recieverId={friendId} messages={messages.data} />
     </div>
   )
 }
