@@ -15,6 +15,7 @@ import Requests from '../components/Requests'
 import Messages from '../components/Messages'
 import Messages2 from '../components/Messages2'
 import { useGetMessages } from '../query/GetAllMessages'
+import Animation from '../components/Animation'
 
 
 
@@ -83,14 +84,14 @@ const Home = () => {
 
         {/* --------------------- add user dialog ---------------------- */}
 
-        <Dialog visible={viewAddUser} >
-          <AddFriends setViewAddUser={setViewAddUser} />
-        </Dialog>
-
+        <Animation visible={viewAddUser} classes={{ in: "in-animation", out: "out-animation" }} time={200}>
+          <Dialog visible={viewAddUser} >
+            <AddFriends setViewAddUser={setViewAddUser} />
+          </Dialog>
+        </Animation>
         <Dialog visible={viewRequests}>
           <Requests setViewRequests={setViewRequests} />
         </Dialog>
-
         {/* --------------- chats ------------------- */}
 
         <div className='chat-container'>

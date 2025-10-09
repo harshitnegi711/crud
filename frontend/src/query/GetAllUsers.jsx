@@ -4,7 +4,7 @@ import { routes } from "../values/routes";
 
 const useGetUsers = () => {
   return useQuery({
-    queryKey: ["gell-users"],
+    queryKey: ["get-all-users"],
     queryFn: async () => await network(routes.get_all_users, null, "GET"),
   });
 };

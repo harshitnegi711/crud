@@ -4,10 +4,12 @@ import { useEffect, useState } from "react"
 import { useGetUsers } from "../query/GetAllUsers"
 import { useAllSentRequestQuery } from "../query/useAllSentRequestQuery"
 import { useSendRequestMutation } from "../mutations/useSendRequest"
+import { useQueryClient } from "@tanstack/react-query"
 
 const AddFriends = ({ setViewAddUser }) => {
 
   const { uid } = useParams()
+  const queryClient = useQueryClient()
 
   const allUsers = useGetUsers()
   const sentRequests = useAllSentRequestQuery()
@@ -21,7 +23,11 @@ const AddFriends = ({ setViewAddUser }) => {
 
   const sendRequest = (revieverId, senderId) => {
     // console.log("ids", revieverId, senderId)
-    sendRequestMutation.mutate({ reqRecieverId: revieverId, reqSenderId: senderId })
+    sendRequestMutation.mutate({ reqRecieverId: revieverId, reqSenderId: senderId }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("get-all-users")
+      }
+    })
   }
 
 
@@ -50,7 +56,7 @@ const AddFriends = ({ setViewAddUser }) => {
 
   // --------------- UI BODY ----------------
   return (
-    <div className='relative in-animation'
+    <div className='relative'
       style={{
         background: "#1111",
         border: "1px solid #262626",

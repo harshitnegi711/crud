@@ -15,7 +15,7 @@ const Requests = ({ setViewRequests }) => {
 
   const [requests, setRequests] = useState([])
 
-  console.log("hello --->", getRequests.data)
+  // console.log("hello --->", getRequests.data)
 
   // ----------------- Functions --------------- //
 

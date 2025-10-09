@@ -730,9 +730,13 @@ border:none;
 animation:in-anim 0.2s  ease-in-out forwards;
 }
 
+.out-animation {
+  animation: out-anim 0.3s ease-in-out forwards;
+}
+
 /* ************** Animations *************** */
 
-@keyFrames in-anim{
+@keyframes in-anim{
  0% {
     transform: scale(0.4);
     opacity: 0;              
@@ -742,7 +746,21 @@ animation:in-anim 0.2s  ease-in-out forwards;
     opacity: 1;              
   }
 }
+
+
+
+@keyframes out-anim {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
 }
+
+
 
 @keyFrames up-down{
  0%, 100% {
