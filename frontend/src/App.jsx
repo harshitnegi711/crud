@@ -4,7 +4,7 @@ import "primeflex/primeflex.css";                                // PrimeFlex
 import "primeicons/primeicons.css";                              // icons
 import "./index.css";                                            // your custom css
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
 import Login from "./pages/Login";
 import LandingPage from "./pages/LandingPage";
@@ -18,11 +18,14 @@ import Home from "./pages/Home";
 const App = () => {
 
   window.document.body.className = `dark-theme`;
+  const isLoggedIn = localStorage.getItem("keepLoggedIn")
+  const uid = localStorage.getItem("uid")
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <LandingPage />
+      // element: isLoggedIn ? <Navigate to={`/home/ ${uid}`} /> : < LandingPage />
+      element: < LandingPage />
     },
     {
       path: "/login",

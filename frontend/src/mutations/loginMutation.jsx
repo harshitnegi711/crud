@@ -8,6 +8,8 @@ const useLoginMutation = () => {
   return useMutation({
     mutationFn: async (payload) => await network(routes.login_user, null, "POST", payload),
     onSuccess: (data) => {
+      localStorage.setItem("keepLoggedIn", JSON.stringify(true))
+      localStorage.setItem("uid", data?.user._id)
       navigate("/home/" + data?.user._id)
     }
   })

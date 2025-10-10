@@ -8,6 +8,7 @@ const useLogoutMutation = () => {
   return useMutation({
     mutationFn: async () => await network(routes.logout_user, null, "POST"),
     onSuccess: (data) => {
+      localStorage.clear()
       navigate("/login")
     }
   })
