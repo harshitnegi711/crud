@@ -14,7 +14,8 @@ const routes = {
   send_message: url + masterPath + "/message/send",
   send_request: url + masterPath + "/friendship/send-request",
   get_sent_request: url + masterPath + "/friendship/view-sent-requests",
-  get_revieved_request: url + masterPath + "/friendship/view-requests"
+  get_revieved_request: url + masterPath + "/friendship/view-requests",
+  request_action: url + masterPath + "/friendship/action"
 }
 
 

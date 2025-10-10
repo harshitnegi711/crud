@@ -5,6 +5,7 @@ import { useGetUsers } from "../query/GetAllUsers"
 import { useAllSentRequestQuery } from "../query/useAllSentRequestQuery"
 import { useSendRequestMutation } from "../mutations/useSendRequest"
 import useRecieveRequests from "../query/useRecieveRequests"
+import useRequestActionMutation from "../mutations/useRequestActionMutation"
 
 const Requests = ({ setViewRequests }) => {
 
@@ -12,10 +13,11 @@ const Requests = ({ setViewRequests }) => {
 
   const allUsers = useGetUsers()
   const getRequests = useRecieveRequests()
+  const reqActionMutation = useRequestActionMutation()
 
   const [requests, setRequests] = useState([])
 
-  // console.log("hello --->", getRequests.data)
+  // console.log("requests --->", getRequests.data)
 
   // ----------------- Functions --------------- //
 
@@ -31,10 +33,12 @@ const Requests = ({ setViewRequests }) => {
 
   useEffect(() => {
     if (getRequests.data) {
-      setRequests(getRequests.data)
+      const validRequests = getRequests.data.filter(
+        (_req) => _req.status === "pending"
+      );
+      setRequests(validRequests);
     }
-  }, [getRequests.data])
-
+  }, [getRequests.data]);
 
   // --------------- UI BODY ----------------
   return (
@@ -75,29 +79,44 @@ const Requests = ({ setViewRequests }) => {
 
       <div className='flex flex-column gap-2 mt-3'>
         {
-          requests && requests.map((_req, idx) => {
-            const user = getUser(_req.user1)
-            return (<div className='user-tile' key={idx}>
-              <div className='flex align-items-center gap-3'>
-                <img
-                  src={user?.avatar}
-                  alt='user'
-                  style={{
-                    height: "50px",
-                    width: "50px",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                    borderRadius: "50%"
+          requests.length ?
+            requests.map((_req, idx) => {
+
+              const user = getUser(_req.user1)
+              return (<div className='user-tile' key={idx}>
+                <div className='flex align-items-center gap-3'>
+                  <img
+                    src={user?.avatar}
+                    alt='user'
+                    style={{
+                      height: "50px",
+                      width: "50px",
+                      objectFit: "cover",
+                      objectPosition: "center",
+                      borderRadius: "50%"
+                    }}
+                  />
+                  <span>{user.fullName}</span>
+                </div>
+                <button style={{ background: "#6B7280" }}
+                  onClick={() => {
+                    reqActionMutation.mutate({ requestId: _req._id, action: "reject" })
                   }}
-                />
-                <span>{user.fullName}</span>
-              </div>
-              <button style={{ background: "#6B7280" }}><i className='pi pi-times flex align-items-center' />Decline</button>
-              <button style={{ background: "#8650FB" }}><i className='pi pi-check flex align-items-center' />Accept</button>
-            </div>)
-          })
-        }
-      </div>
+                ><i className='pi pi-times flex align-items-center' />Decline</button>
+                <button style={{ background: "#8650FB" }}
+                  onClick={() => {
+                    reqActionMutation.mutate({ requestId: _req._id, action: "accept" })
+                  }}
+                >
+                  <i className='pi pi-check flex align-items-center' />
+                  Accept</button>
+              </div>)
+            }) :
+            <div className="flex justify-content-center align-items-center w-full" style={{ color: "grey" }}>
+              no requests.
+            </div>
+
+        }      </div>
 
 
     </div>

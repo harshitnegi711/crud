@@ -75,26 +75,51 @@ const getAllSentRequest = asyncHandler(async (req, res) => {
 
 
 const requestAction = asyncHandler(async (req, res) => {
+  const { requestId, action } = req.body;
 
-  const { requestId, action } = req.body
-
-  if (!["accept", "reject"].includes(action)) { throw new ApiError(403, "invalid action !") }
-
-  const request = await FriendShip.findByIdAndUpdate(requestId, { status: action }, { new: true })
-
-  // ----- pushing userid into friend list -----
-
-  if (action === "accept") {
-    await User.findByIdAndUpdate(request.user1, { $push: { friendship: request.user2 } }, { new: true });
-    await User.findByIdAndUpdate(request.user2, { $push: { friendship: request.user1 } }, { new: true });
+  if (!["accept", "reject"].includes(action)) {
+    throw new ApiError(403, "Invalid action!");
   }
 
+  let request;
 
-  if (!request) { throw new ApiError(402, "invalid request id") }
+  if (action === "accept") {
+    // ----------------- update status -----------
+    request = await FriendShip.findByIdAndUpdate(
+      requestId,
+      { status: action },
+      { new: true }
+    );
 
-  res.status(200).json(ApiResponse(200, request, "request accepted successfully."))
-})
+    if (!request) throw new ApiError(402, "Invalid request ID.");
+
+    // add each user to the other's friend list
+    await User.findByIdAndUpdate(request.user1, {
+      $push: { friendship: request.user2 },
+    });
+    await User.findByIdAndUpdate(request.user2, {
+      $push: { friendship: request.user1 },
+    });
+
+    return res
+      .status(200)
+      .json(ApiResponse(200, request, "Request accepted successfully."));
+  }
+
+  // ----------- Handle rejection ------------
+  if (action === "reject") {
+    request = await FriendShip.findByIdAndDelete(requestId);
+
+    if (!request) throw new ApiError(402, "Invalid request ID.");
+
+    return res
+      .status(200)
+      .json(ApiResponse(200, request, "Request rejected successfully."));
+  }
+});
 
 
 
 export { sendRequset, getRecievedRequest, requestAction, getAllSentRequest }
+
+

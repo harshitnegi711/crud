@@ -5,7 +5,7 @@ const Animation = ({ children, classes = { in: "", out: "" }, visible, time = 30
   const [animationClass, setAnimationClass] = useState(visible ? classes.in : classes.out)
   const [render, setRender] = useState(visible)
 
-  console.log("clsass----> ", animationClass)
+  // console.log("clsass----> ", animationClass)
 
   useEffect(() => {
     if (visible) {
