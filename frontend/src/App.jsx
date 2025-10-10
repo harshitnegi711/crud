@@ -24,8 +24,8 @@ const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      // element: isLoggedIn ? <Navigate to={`/home/ ${uid}`} /> : < LandingPage />
-      element: < LandingPage />
+      element: isLoggedIn ? <Navigate to={`/home/ ${uid}`} /> : < LandingPage />
+      // element: < LandingPage />
     },
     {
       path: "/login",
