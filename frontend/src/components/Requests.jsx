@@ -42,7 +42,7 @@ const Requests = ({ setViewRequests }) => {
 
   // --------------- UI BODY ----------------
   return (
-    <div className='relative in-animation'
+    <div className='relative'
       style={{
         background: "#1111",
         border: "1px solid #262626",
