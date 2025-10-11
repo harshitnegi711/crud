@@ -5,15 +5,19 @@ import { useGetUsers } from "../query/GetAllUsers"
 import { useAllSentRequestQuery } from "../query/useAllSentRequestQuery"
 import { useSendRequestMutation } from "../mutations/useSendRequest"
 import { useQueryClient } from "@tanstack/react-query"
+import { useFrienId } from "../Context"
 
 const AddFriends = ({ setViewAddUser }) => {
 
   const { uid } = useParams()
   const queryClient = useQueryClient()
+  const { friendId, setFriendId } = useFrienId()
+
 
   const allUsers = useGetUsers()
   const sentRequests = useAllSentRequestQuery()
   const sendRequestMutation = useSendRequestMutation()
+
 
   const [userSearch, setUserSearch] = useState("")
   const [users, setUsers] = useState([])
@@ -117,7 +121,12 @@ const AddFriends = ({ setViewAddUser }) => {
                       onClick={() => {
                         sendRequest(_user._id, uid)
                       }}><i className='pi pi-user-plus' /> Add</button> :
-                    <button style={{ background: "#10B981" }}><i className='pi pi-comment' />Message</button>
+                    <button style={{ background: "#10B981" }}
+                      onClick={() => {
+                        setFriendId(_user._id)
+                        setViewAddUser(false)
+                      }}
+                    ><i className='pi pi-comment' />Message</button>
               )
               }
             </div>)

@@ -16,6 +16,7 @@ import Messages from '../components/Messages'
 import Messages2 from '../components/Messages2'
 import { useGetMessages } from '../query/GetAllMessages'
 import Animation from '../components/Animation'
+import { useFrienId } from '../Context'
 
 
 
@@ -24,11 +25,12 @@ const Home = () => {
   const menuRef = useRef(null)
 
   const { uid } = useParams()
+  const { friendId, setFriendId } = useFrienId()
 
   const [searchText, setSearchText] = useState("")
   const [userSearch, setUserSearch] = useState("")
   const [selectedChat, setSelectedChat] = useState(0)
-  const [friendId, setFriendId] = useState("")
+  // const [friendId, setFriendId] = useState("")
   const [recieverId, setRecieverId] = useState("")
   const [viewAddUser, setViewAddUser] = useState(false)
   const [viewRequests, setViewRequests] = useState(false)
@@ -102,10 +104,13 @@ const Home = () => {
           )}
 
           {chats.map((_chat, idx) => {
-            const isSelected = selectedChat === idx
+
             const otherUser = _chat.participants.find(
               (p) => p._id !== currentUserInfo.data._id
             )
+
+            const isSelected = otherUser._id === friendId
+
             {/* console.log("", otherUser, currentUserInfo.data) */ }
 
             return (
@@ -114,7 +119,7 @@ const Home = () => {
                 className={` chat-tile ${isSelected ? `selected` : ``}`}
                 onClick={() => {
                   setFriendId(otherUser?._id)
-                  setSelectedChat(idx)
+                  // setSelectedChat(idx)
                 }}
               >
                 <img
