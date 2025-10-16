@@ -28,10 +28,6 @@ const Home = () => {
   const { friendId, setFriendId } = useFrienId()
 
   const [searchText, setSearchText] = useState("")
-  const [userSearch, setUserSearch] = useState("")
-  const [selectedChat, setSelectedChat] = useState(0)
-  // const [friendId, setFriendId] = useState("")
-  const [recieverId, setRecieverId] = useState("")
   const [viewAddUser, setViewAddUser] = useState(false)
   const [viewRequests, setViewRequests] = useState(false)
 
@@ -48,7 +44,6 @@ const Home = () => {
   // console.log("reqs ----> ", sentRequests.data)
   // console.log(chatsData.data)
   // console.log("users -----> ", users)
-
 
   const items = [
     {
@@ -154,7 +149,7 @@ const Home = () => {
 
 
       {/* TODO: -------------- Messages ----------------- */}
-      <Messages2 recieverId={friendId} messages={messages.data} />
+      <Messages2 recieverId={friendId} />
     </div>
   )
 }

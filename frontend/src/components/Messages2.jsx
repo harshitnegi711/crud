@@ -1,18 +1,23 @@
 import { useParams } from "react-router-dom";
 import useGetUserByIdMutation from "../mutations/useGetUserByIdMutation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSendMessageMutation } from "../mutations/useSendMessageMutation";
+import { useSocket } from "../Context";
+import { useGetMessages } from "../query/GetAllMessages";
 
-const Messages2 = ({ messages = [], recieverId }) => {
+const Messages2 = ({ recieverId }) => {
   const bottomRef = useRef(null);
   const containerRef = useRef(null);
   const [isUserNearBottom, setIsUserNearBottom] = useState(true);
   const [messageContent, setMessageContent] = useState("");
+  const [localMessages, setLocalMessages] = useState([])
 
   const { uid } = useParams();
+  const { socket } = useSocket()
 
   const getUserMutation = useGetUserByIdMutation();
   const sendMutation = useSendMessageMutation();
+  const messages = useGetMessages(recieverId)
   const friend = getUserMutation.data;
 
   // ----- Fetch friend info when receiverId changes ------
@@ -22,9 +27,54 @@ const Messages2 = ({ messages = [], recieverId }) => {
     }
   }, [recieverId]);
 
+  // -------------populating messages ----- //
+
+  useEffect(() => {
+    if (messages.data) {
+      setLocalMessages(messages.data)
+    }
+  }, [messages.data])
+
+  // ---------------- listening for new messages -------------- //
+  const handleReceive = useCallback((_msg) => {
+    console.log("for me -----> ", _msg);
+    setLocalMessages((prev) => [...prev, _msg]);
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("receive_message", handleReceive);
+
+    return () => socket.off("receive_message", handleReceive);
+  }, [socket, handleReceive]);
+
+  // --------------- sending msg ---------------------- //
+
+  const handleSend = () => {
+
+    const newMessage = {
+      messageContent: messageContent,
+      recieverId: recieverId,
+      senderId: uid,
+      createdAt: new Date()
+    }
+
+    // ---- updating state ----
+
+    setLocalMessages((prev) => [...prev, newMessage]);
+    socket?.emit("send_message", newMessage)
+
+    // ---- saving in backend -----
+    sendMutation.mutate({ messageContent: messageContent, recieverId: recieverId })
+
+    setMessageContent("")
+  }
+
+
   // ------- Auto scroll to bottom when messages update ---------
   useEffect(() => {
-    if (messages.length > 0 && isUserNearBottom) {
+    if (localMessages.length > 0 && isUserNearBottom) {
       const timer = setTimeout(() => {
         bottomRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -33,7 +83,7 @@ const Messages2 = ({ messages = [], recieverId }) => {
       }, 50);
       return () => clearTimeout(timer);
     }
-  }, [messages, recieverId, isUserNearBottom]);
+  }, [localMessages, recieverId, isUserNearBottom]);
 
   // ------- Track if user is near bottom or scrolled up -------
   const handleScroll = () => {
@@ -79,7 +129,7 @@ const Messages2 = ({ messages = [], recieverId }) => {
         className="message-container"
         onScroll={handleScroll}
       >
-        {messages.map((_message, idx) => {
+        {localMessages.map((_message, idx) => {
           const currentuserId = uid;
           const isSender = currentuserId === _message.sender;
 
@@ -126,19 +176,20 @@ const Messages2 = ({ messages = [], recieverId }) => {
           className={`send-div ${!messageContent.length && "disable"}`}
           onClick={() => {
             if (messageContent.trim() !== "") {
-              sendMutation.mutate(
-                { messageContent: messageContent, recieverId: recieverId },
-                {
-                  onSuccess: () => {
-                    setMessageContent("");
-                    setTimeout(() => {
-                      bottomRef.current?.scrollIntoView({
-                        behavior: "smooth",
-                      });
-                    }, 100);
-                  },
-                }
-              );
+              // sendMutation.mutate(
+              //   { messageContent: messageContent, recieverId: recieverId },
+              //   {
+              //     onSuccess: () => {
+              //       setMessageContent("");
+              //       setTimeout(() => {
+              //         bottomRef.current?.scrollIntoView({
+              //           behavior: "smooth",
+              //         });
+              //       }, 100);
+              //     },
+              //   }
+              // );
+              handleSend()
             }
           }}
         >
