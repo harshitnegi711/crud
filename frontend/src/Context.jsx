@@ -5,10 +5,12 @@ import { io } from "socket.io-client"
 // ------------ context -----------
 const FriendId = React.createContext()
 const Socket = React.createContext()
+const OnlineUsers = React.createContext()
 
 // ---------------- custom hook ---------------
 export const useFrienId = () => useContext(FriendId)
 export const useSocket = () => useContext(Socket)
+export const useOnlineUsers = () => useContext(OnlineUsers)
 
 const Context = ({ children }) => {
 
@@ -16,6 +18,7 @@ const Context = ({ children }) => {
 
   const [friendId, setFriendId] = useState("")
   const [socket, setSocket] = useState(null)
+  const [onlineUsers, setOnlineUsers] = useState([])
 
   // ------------- Initialize socket.io connection --------------
   useEffect(() => {
@@ -35,10 +38,16 @@ const Context = ({ children }) => {
 
     newSocket.on("connect_error", (err) => console.log(" Socket error:", err));
 
-    // join the user's own room
-    // newSocket.emit("join_room", uid);
-    console.log("Connected to socket : ----> ", newSocket.id);
+    // ----------- listining for online users ---------------- //
 
+    newSocket.on("online_users", (_users) => {
+      console.log("online users ----> ", _users)
+      setOnlineUsers(_users)
+    })
+
+    // join the user's own room
+
+    console.log("Connected to socket : ----> ", newSocket.id);
 
     // save socket to state
     setSocket(newSocket);
@@ -56,7 +65,9 @@ const Context = ({ children }) => {
   return (
     <FriendId.Provider value={{ friendId, setFriendId }} >
       <Socket.Provider value={{ socket }}>
-        {children}
+        <OnlineUsers.Provider value={{ onlineUsers }}>
+          {children}
+        </OnlineUsers.Provider>
       </Socket.Provider>
     </FriendId.Provider>
   )

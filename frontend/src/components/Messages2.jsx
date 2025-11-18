@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import useGetUserByIdMutation from "../mutations/useGetUserByIdMutation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSendMessageMutation } from "../mutations/useSendMessageMutation";
-import { useSocket } from "../Context";
+import { useOnlineUsers, useSocket } from "../Context";
 import { useGetMessages } from "../query/GetAllMessages";
 
 const Messages2 = ({ recieverId }) => {
@@ -14,11 +14,14 @@ const Messages2 = ({ recieverId }) => {
 
   const { uid } = useParams();
   const { socket } = useSocket()
+  const { onlineUsers } = useOnlineUsers()
 
   const getUserMutation = useGetUserByIdMutation();
   const sendMutation = useSendMessageMutation();
   const messages = useGetMessages(recieverId)
   const friend = getUserMutation.data;
+
+  // console.log("-----------> ", onlineUsers.includes(friend._id))
 
   // ----- Fetch friend info when receiverId changes ------
   useEffect(() => {
@@ -108,7 +111,7 @@ const Messages2 = ({ recieverId }) => {
   return (
     <div className="message-div">
       {/* ---------- TOP BAR ---------- */}
-      <div className="message-top-bar">
+      <div className="message-top-bar relative">
         <img
           src={friend?.avatar}
           alt="user"
@@ -120,6 +123,15 @@ const Messages2 = ({ recieverId }) => {
             borderRadius: "50%",
           }}
         />
+        <div style={{
+          position: "absolute",
+          left: "45px",
+          bottom: "10px",
+          height: "10px",
+          width: "10px",
+          background: onlineUsers.includes(recieverId) ? "#40BF51" : "grey",
+          borderRadius: "50%"
+        }}></div>
         <span>{friend?.fullName}</span>
       </div>
 

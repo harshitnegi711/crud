@@ -16,7 +16,7 @@ import Messages from '../components/Messages'
 import Messages2 from '../components/Messages2'
 import { useGetMessages } from '../query/GetAllMessages'
 import Animation from '../components/Animation'
-import { useFrienId } from '../Context'
+import { useFrienId, useSocket } from '../Context'
 
 
 
@@ -36,6 +36,7 @@ const Home = () => {
   const chatsData = useGetChats()
   const messages = useGetMessages(friendId)
   const navigate = useNavigate()
+  const { socket } = useSocket()
 
   const chats = chatsData?.data || []
 
@@ -55,6 +56,9 @@ const Home = () => {
       }
     },
   ];
+
+
+  // console.log("socket info -----------> ", socket)
 
 
   // TODO: -------------- UI BODY -----------------
